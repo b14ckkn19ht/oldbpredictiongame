@@ -4,155 +4,170 @@
  * Implements hook_schema().
  */
 function predictiongame_schema() {
-  $schema['predictiongame_team'] = array(
-    'description' => 'The teams which participate in leagues or tournaments.',
-    'fields' => array(
-      'id' => array(
-        'description' => 'The unique ID of the team.',
-        'type' => 'serial',
-        'unsigned' => TRUE,
-        'not null' => TRUE,
-      ),
-      'name' => array(
-        'description' => 'The name of the team.',
-        'type' => 'varchar',
-        'length' => 50,
-        'not null' => TRUE,
-      ),
-    ),
-    'primary key' => array('id'),
-  );
-  $schema['predictiongame_competition'] = array(
-    'description' => 'Tournament, leagues and the like, for which predictions can be made.',
-    'fields' => array(
-      'id' => array(
-        'description' => 'The unique ID of the competition.',
-        'type' => 'serial',
-        'unsigned' => TRUE,
-        'not null' => TRUE,
-      ),
-      'name' => array(
-        'description' => 'The name of the competition.',
-        'type' => 'varchar',
-        'length' => 50,
-        'not null' => TRUE,
-      ),
-      'shortname' => array(
-        'description' => 'The name of the competition.',
-        'type' => 'varchar',
-        'length' => 50,
-        'not null' => TRUE,
-      ),
-      // teams, matches_per_page, deadline, points[winner], points[diff], points[result]
-      'options' => array(
-        'description' => 'Options concerning the competition.',
-        'type' => 'blob',
-        'not null' => TRUE,
-      ),
-    ),
-    'primary key' => array('id'),
-    'unique keys' => array(
-      'shortname' => array('shortname'),
-    ),
-  );
-  $schema['predictiongame_match'] = array(
-    'description' => 'Contains all individual matches between teams in a competition.',
-    'fields' => array(
-      'id' => array(
-        'description' => 'The unique ID of the match.',
-        'type' => 'serial',
-        'unsigned' => TRUE,
-        'not null' => TRUE,
-      ),
-      'competition' => array(
-        'description' => 'The {predictiongame_competition}.id this match belongs to.',
-        'type' => 'int',
-        'unsigned' => TRUE,
-        'not null' => TRUE,
-      ),
-      'home' => array(
-        'description' => 'The {predictiongame_team}.id of the home team.',
-        'type' => 'int',
-        'unsigned' => TRUE,
-        'not null' => TRUE,
-      ),
-      'away' => array(
-        'description' => 'The {predictiongame_team}.id of the away team.',
-        'type' => 'int',
-        'unsigned' => TRUE,
-        'not null' => TRUE,
-      ),
-      'time' => array(
-        'description' => 'The time at which the match starts.',
-        'type' => 'int',
-        'not null' => TRUE,
-      ),
-      'score_home' => array(
-        'description' => 'The points scored by the home team.',
-        'type' => 'int',
-        'not null' => FALSE,
-      ),
-      'score_away' => array(
-        'description' => 'The points scored by the away team.',
-        'type' => 'int',
-        'not null' => FALSE,
-      ),
-    ),
-    'primary key' => array('id'),
-  );
-  $schema['predictiongame_bet'] = array(
-    'description' => "A user's guess of the result of a match.",
-    'fields' => array(
-      'id' => array(
-        'description' => 'The unique ID of the bet.',
-        'type' => 'serial',
-        'unsigned' => TRUE,
-        'not null' => TRUE,
-      ),
-      'uid' => array(
-        'description' => 'The {users}.id of the user who made this bet.',
-        'type' => 'int',
-        'unsigned' => TRUE,
-        'not null' => TRUE,
-      ),
-      'mid' => array(
-        'description' => 'The {predictiongame_mactch}.id this bet pertains to.',
-        'type' => 'int',
-        'unsigned' => TRUE,
-        'not null' => TRUE,
-      ),
-      'competition' => array(
-        'description' => 'The {predictiongame_competition}.id this bet belongs to.',
-        'type' => 'int',
-        'unsigned' => TRUE,
-        'not null' => TRUE,
-      ),
-      'bet_home' => array(
-        'description' => 'The predicted score of the home team.',
-        'type' => 'int',
-        'not null' => TRUE,
-      ),
-      'bet_away' => array(
-        'description' => 'The predicted score of the away team.',
-        'type' => 'int',
-        'not null' => TRUE,
-      ),
-      'points' => array(
-        'description' => 'The points the user earned for this bet.',
-        'type' => 'int',
-        'not null' => FALSE,
-      ),
-    ),
-    'primary key' => array('id'),
-    'unique keys' => array(
-      'uid_match' => array('uid', 'mid')
-    ),
-    'indexes' => array(
-      'competition' => array('competition')
-    ),
-  );
+	$schema['predictiongame_team'] = array(
+		'description' => 'The teams which participate in leagues or tournaments.',
+		'fields' => array(
+			'teamID' => array(
+				'description' => 'The unique ID of the team.',
+				'type' => 'int',
+				'unsigned' => TRUE,
+				'not null' => TRUE,
+			),
+			'teamName' => array(
+				'description' => 'The name of the team.',
+				'type' => 'varchar',
+				'length' => 50,
+				'not null' => TRUE,
+			),
+			'teamIconURL' => array(
+				'description' => 'URL to the teamicon',
+				'type' => 'varchar',
+				'length' => 200,
+				'not null' => FALSE,
+			),
+		),
+		'primary key' => array('teamID'),
+	);
+   $schema['predictiongame_league'] = array(
+		'description' => 'League for the prediction game',
+		'fields' => array(
+			'leagueID' => array(
+				'description' => 'The unique ID of the league.',
+				'type' => 'int',
+				'unsigned' => TRUE,
+				'not null' => TRUE,
+			),
+			'leagueName' => array(
+				'description' => 'The name of the league.',
+				'type' => 'varchar',
+				'length' => 50,
+				'not null' => TRUE,
+			),
+			'leagueShortCut' => array(
+				'description' => 'The shortcut name of the league.',
+				'type' => 'varchar',
+				'length' => 10,
+				'not null' => TRUE,
+			),
+			'leageSaison' => array(
+				'description' => 'The saison of the leage like 2012 for the 1st Bundesliga 2012/2013',
+				'type' => 'int',
+				'unsigned' => TRUE,
+				'not null' => TRUE,
+			),
+		),	
+		'primary key' => array('leagueID'),
+	);
+	$schema['predictiongame_match'] = array(
+		'description' => 'Contains all individual matches between teams in a league.',
+		'fields' => array(
+			'matchID' => array(
+				'description' => 'The unique ID of the match.',
+				'type' => 'int',
+				'unsigned' => TRUE,
+				'not null' => TRUE,
+			),
+			'matchDateTime' => array(
+				'description' => 'The time at which the match starts.',
+				'type' => 'int',
+				'not null' => TRUE,
+			),
+			'groudID' => array(
+				'descritpion' => 'Group ID for this match',
+				'type' => 'int',
+				'unsigned' => TRUE,
+				'not null' => TRUE,
+			),
+			'groudOrderID' => array(
+				'descritpion' => 'Group order ID for this match to get the right order',
+				'type' => 'int',
+				'unsigned' => TRUE,
+				'not null' => TRUE,
+			),
+			'groudName' => array(
+				'descritpion' => 'Name of the Group',
+				'type' => 'varchar',
+				'length' => '50',
+				'not null' => TRUE,
+			),
+			'leagueID' => array(
+				'description' => 'The unique ID of the league.',
+				'type' => 'int',
+				'unsigned' => TRUE,
+				'not null' => TRUE,
+			),
+			'team1ID' => array(
+				'description' => 'The {predictiongame_team}.id of the home team.',
+				'type' => 'int',
+				'unsigned' => TRUE,
+				'not null' => TRUE,
+			),
+			'team2ID' => array(
+				'description' => 'The {predictiongame_team}.id of the away team.',
+				'type' => 'int',
+				'unsigned' => TRUE,
+				'not null' => TRUE,
+			),
+			'scoreTeam1' => array(
+				'description' => 'The points scored by the home team.',
+				'type' => 'int',
+				'not null' => FALSE,
+			),
+			'scoreTeam2' => array(
+				'description' => 'The points scored by the away team.',
+				'type' => 'int',
+				'not null' => FALSE,
+			),
+		),
+		'primary key' => array('matchID'),
+	);
+	$schema['predictiongame_bet'] = array(
+		'description' => "A user's guess of the result of a match.",
+		'fields' => array(
+			'betID' => array(
+				'description' => 'The unique ID of the bet.',
+				'type' => 'serial',
+				'unsigned' => TRUE,
+				'not null' => TRUE,
+			),
+			'uid' => array(
+				'description' => 'The {users}.id of the user who made this bet.',
+				'type' => 'int',
+				'unsigned' => TRUE,
+				'not null' => TRUE,
+			),
+			'matchID' => array(
+				'description' => 'The {predictiongame_mactch}.id this bet pertains to.',
+				'type' => 'int',
+				'unsigned' => TRUE,
+				'not null' => TRUE,
+			),
+			'leagueID' => array(
+				'description' => 'The {predictiongame_competition}.id this bet belongs to.',
+				'type' => 'int',
+				'unsigned' => TRUE,
+				'not null' => TRUE,
+			),
+			'betTeam1' => array(
+				'description' => 'The predicted score of the home team.',
+				'type' => 'int',
+				'not null' => TRUE,
+			),
+			'betTeam2' => array(
+				'description' => 'The predicted score of the away team.',
+				'type' => 'int',
+				'not null' => TRUE,
+			),
+			'points' => array(
+				'description' => 'The points the user earned for this bet.',
+				'type' => 'int',
+				'not null' => FALSE,
+			),
+		),
+		'primary key' => array('betID'),
+	);
 
-  return $schema;
+	return $schema;
 }
 
 /**
@@ -160,17 +175,17 @@ function predictiongame_schema() {
  *
  * Removes the unsigned flag from bets (so they can be subtracted correctly).
  */
-function predictiongame_update_7101() {
-  $bet_home = array(
-    'description' => 'The predicted score of the home team.',
-    'type' => 'int',
-    'not null' => TRUE,
-  );
-  db_change_field('predictiongame_bet', 'bet_home', 'bet_home', $bet_home);
-  $bet_away = array(
-    'description' => 'The predicted score of the away team.',
-    'type' => 'int',
-    'not null' => TRUE,
-  );
-  db_change_field('predictiongame_bet', 'bet_away', 'bet_away', $bet_away);
-}
+//function predictiongame_update_7101() {
+  //$bet_home = array(
+    //'description' => 'The predicted score of the home team.',
+    //'type' => 'int',
+    //'not null' => TRUE,
+  //);
+  //db_change_field('predictiongame_bet', 'betTeam1', 'bet_home', $bet_home);
+  //$bet_away = array(
+    //'description' => 'The predicted score of the away team.',
+    //'type' => 'int',
+    //'not null' => TRUE,
+  //);
+  //db_change_field('predictiongame_bet', 'bet_away', 'bet_away', $bet_away);
+//}
